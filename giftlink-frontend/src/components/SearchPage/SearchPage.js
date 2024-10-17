@@ -4,6 +4,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {urlConfig} from '../../config';
 
 function SearchPage() {
+    const [searchQuery, setSearchQuery] = useState('');
+    const [ageRange, setAgeRange] = useState(6);
+    const [searchResults, setSearchResults] = useState([]);
 
     //Task 1: Define state variables for the search query, age range, and search results.
     const categories = ['Living', 'Bedroom', 'Bathroom', 'Kitchen', 'Office'];
@@ -32,6 +35,26 @@ function SearchPage() {
 
 
     // Task 2. Fetch search results from the API based on user inputs.
+    const handleSearch = async () => {
+        const baseUrl = `${urlConfig.backendUrl}/api/search`;
+        const queryParams = new URLSearchParams({
+            name: searchQuery,
+            age_years: ageRange,
+            category: document.getElementById('categorySelect').value,
+            condition: document.getElementById('conditionSelect').value,
+        }).toString();
+
+        try {
+            const response = await fetch(`${baseUrl}${queryParams}`);
+            if (!response.ok) {
+                throw new Error('Search failed');
+            }
+            const data = await response.json();
+            setSearchResults(data);
+        } catch(error) {
+            console.error("Failed to fetch search results:", error);
+        }
+    }
 
     const navigate = useNavigate();
 
